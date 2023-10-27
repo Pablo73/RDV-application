@@ -1,6 +1,6 @@
 FROM node:16.14-alpine
 
-WORKDIR /app-frontend
+WORKDIR /front-end
 
 COPY package.json ./
 COPY package-lock.json ./
@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 3000
 
-ENTRYPOINT ["npm", "run", "dev"]
+CMD ["npm", "run", "dev"]
