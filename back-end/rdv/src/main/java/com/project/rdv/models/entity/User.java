@@ -2,16 +2,20 @@ package com.project.rdv.models.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.List;
-import javax.management.relation.Role;
+import com.project.rdv.security.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
+@Entity
+@Table(name = "\"users\"")
 public class User implements UserDetails, GrantedAuthority {
 
   @Id
@@ -23,14 +27,18 @@ public class User implements UserDetails, GrantedAuthority {
 
   private String password;
 
-  @Column(unique = true)
-  private String userPhoto;
+  @Lob
+  @Column(columnDefinition = "bytea")
+  private byte[] userPhoto;
 
   private Role role;
 
   private String sector;
 
-  public User(Long id, String username, String password, String userPhoto, Role role,
+  public User() {
+  }
+
+  public User(Long id, String username, String password, byte[] userPhoto, Role role,
       String sector) {
     this.id = id;
     this.username = username;
@@ -92,11 +100,11 @@ public class User implements UserDetails, GrantedAuthority {
     this.password = password;
   }
 
-  public String getUserPhoto() {
+  public byte[] getUserPhoto() {
     return userPhoto;
   }
 
-  public void setUserPhoto(String userPhoto) {
+  public void setUserPhoto(byte[] userPhoto) {
     this.userPhoto = userPhoto;
   }
 
@@ -119,6 +127,6 @@ public class User implements UserDetails, GrantedAuthority {
   @Override
   @JsonIgnore
   public String getAuthority() {
-    return null;
+    return this.getRole().getName();
   }
 }

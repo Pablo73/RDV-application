@@ -2,7 +2,7 @@
 FROM eclipse-temurin:17-jdk-jammy as build-image
 WORKDIR /app
 
-COPY .mvn/ .mvn
+COPY .mvn .mvn
 COPY mvnw pom.xml ./
 
 RUN ./mvnw dependency:go-offline
