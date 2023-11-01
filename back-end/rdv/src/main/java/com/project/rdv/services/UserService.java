@@ -4,7 +4,7 @@ import com.project.rdv.exception.NotFoundException;
 import com.project.rdv.models.entity.User;
 import com.project.rdv.models.repository.UserRepository;
 import java.util.List;
-import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +29,17 @@ public class UserService implements UserDetailsService {
     } else {
       String hashedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
 
+      Long lastUserId = userRepository.findLastUserId();
+
+      if (lastUserId.equals(0L)) {
+        user.setId(1L);
+      } else {
+        Long newUserId = lastUserId + 1L;;
+        user.setId(newUserId);
+      }
+
       user.setPassword(hashedPassword);
+
 
       return userRepository.save(user);
     }

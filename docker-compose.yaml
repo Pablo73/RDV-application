@@ -27,7 +27,6 @@ services:
       - DB_PORT=5440
       - DB_NAME=rdvDB
       - DB_USERNAME=postgres
-      - DB_PASSWORD=Pdominguezbww0g2
     healthcheck:
       test: ["CMD-SHELL", "lsof -t -i:8080 || exit 1"]
       timeout: 10s
