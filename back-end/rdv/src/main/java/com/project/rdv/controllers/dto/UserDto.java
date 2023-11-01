@@ -6,7 +6,7 @@ public record UserDto(
     Long id,
     String username,
     byte[] userPhoto,
-    Role role
-) {
+    Role role,
+    String sector) {
 
 }

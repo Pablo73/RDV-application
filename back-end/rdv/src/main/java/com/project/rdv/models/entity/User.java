@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import com.project.rdv.security.Role;
@@ -19,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails, GrantedAuthority {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(unique = true)
   private Long id;
 
   @Column(unique = true)
@@ -38,9 +39,8 @@ public class User implements UserDetails, GrantedAuthority {
   public User() {
   }
 
-  public User(Long id, String username, String password, byte[] userPhoto, Role role,
+  public User(String username, String password, byte[] userPhoto, Role role,
       String sector) {
-    this.id = id;
     this.username = username;
     this.password = password;
     this.userPhoto = userPhoto;
