@@ -1,6 +1,8 @@
 package com.project.rdv.controllers;
 
+import com.project.rdv.controllers.dto.AuthenticationDto;
 import com.project.rdv.controllers.dto.CreateUserDto;
+import com.project.rdv.controllers.dto.ResponseDto;
 import com.project.rdv.controllers.dto.UserDto;
 import com.project.rdv.models.entity.User;
 import com.project.rdv.services.TokenService;
@@ -12,6 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,9 +44,6 @@ public class UserController {
       @Valid @RequestPart("createUserDto") CreateUserDto createUserDto,
       @RequestPart("userPhoto") MultipartFile userPhoto
   ) throws IOException {
-    System.out.println("------------------------------------------------");
-    System.out.println(userPhoto.getContentType());
-    System.out.println("------------------------------------------------");
     DtoConverter dtoConverter = new DtoConverter();
 
     CreateUserDto newUserDto = dtoConverter.createPersonToDto(createUserDto, userPhoto);
@@ -67,4 +70,30 @@ public class UserController {
     return (ResponseEntity.ok(userService.getAllUser())) ;
   }
 
+  @PostMapping("auth/login")
+  public ResponseEntity<?> login(@RequestBody AuthenticationDto authenticationDto) {
+    try {
+      UsernamePasswordAuthenticationToken usernamePassword =
+          new UsernamePasswordAuthenticationToken(
+              authenticationDto.username(),
+              authenticationDto.password()
+          );
+
+      Authentication auth = authenticationManager.authenticate(usernamePassword);
+
+      User user = (User) auth.getPrincipal();
+
+      String token = tokenService.generateToken(user);
+
+      ResponseDto<String> response = new ResponseDto<>(token);
+
+      return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    } catch (BadCredentialsException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized password!");
+
+    } catch (InternalAuthenticationServiceException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized user!");
+    }
+  }
 }

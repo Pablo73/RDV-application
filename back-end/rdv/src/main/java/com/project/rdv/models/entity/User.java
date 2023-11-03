@@ -29,7 +29,7 @@ public class User implements UserDetails, GrantedAuthority {
   private String password;
 
   @Lob
-  @Column(columnDefinition = "bytea")
+  @Column
   private byte[] userPhoto;
 
   private Role role;
