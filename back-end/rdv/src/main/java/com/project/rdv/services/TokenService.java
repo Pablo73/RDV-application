@@ -18,7 +18,7 @@ public class TokenService {
   public String generateToken(User user) {
     Algorithm algorithm = Algorithm.HMAC256(secret);
     return JWT.create()
-        .withIssuer("tracking")
+        .withIssuer("RdvTrack")
         .withSubject(user.getUsername())
         .withExpiresAt(generateExpirationDate())
         .sign(algorithm);
@@ -33,7 +33,7 @@ public class TokenService {
   public String validateToken(String token) {
     Algorithm algorithm = Algorithm.HMAC256(secret);
     return JWT.require(algorithm)
-        .withIssuer("tracking")
+        .withIssuer("RdvTrack")
         .build()
         .verify(token)
         .getSubject();

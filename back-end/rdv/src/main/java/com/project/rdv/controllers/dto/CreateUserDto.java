@@ -7,14 +7,15 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateUserDto(
+
+    Long id,
     @NotNull String username,
     @NotNull String password,
-    byte[] userPhoto,
     @NotNull Role role,
     @NotNull String sector
 ) {
   public User toUser() throws IOException {
-    return new User(username, password, userPhoto, role, sector);
+    return new User(id, username, password, role, sector);
   }
 
 }
