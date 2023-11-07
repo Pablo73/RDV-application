@@ -1,14 +1,14 @@
 package com.project.rdv.models.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 import com.project.rdv.security.Role;
@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails, GrantedAuthority {
 
   @Id
-  @Column(unique = true)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(unique = true)
@@ -28,9 +28,8 @@ public class User implements UserDetails, GrantedAuthority {
 
   private String password;
 
-  @Lob
-  @Column
-  private byte[] userPhoto;
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  private UserImage userImage;
 
   private Role role;
 
@@ -39,11 +38,11 @@ public class User implements UserDetails, GrantedAuthority {
   public User() {
   }
 
-  public User(String username, String password, byte[] userPhoto, Role role,
+  public User(Long id, String username, String password, Role role,
       String sector) {
+    this.id = id;
     this.username = username;
     this.password = password;
-    this.userPhoto = userPhoto;
     this.role = role;
     this.sector = sector;
   }
@@ -63,22 +62,22 @@ public class User implements UserDetails, GrantedAuthority {
 
   @Override
   public boolean isAccountNonExpired() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean isEnabled() {
-    return false;
+    return true;
   }
 
   public void setUsername(String username) {
@@ -87,7 +86,7 @@ public class User implements UserDetails, GrantedAuthority {
 
   @Override
   @JsonIgnore
-  public Collection<User> getAuthorities() {
+  public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(this);
   }
 
@@ -98,14 +97,6 @@ public class User implements UserDetails, GrantedAuthority {
 
   public void setPassword(String password) {
     this.password = password;
-  }
-
-  public byte[] getUserPhoto() {
-    return userPhoto;
-  }
-
-  public void setUserPhoto(byte[] userPhoto) {
-    this.userPhoto = userPhoto;
   }
 
   public Role getRole() {

@@ -22,31 +22,40 @@ public class UserService implements UserDetailsService {
     this.userRepository = userRepository;
   }
 
+
   public User create(User user) {
-    User userOptional = userRepository.findByUsername(user.getUsername());
-    if (userOptional != null) {
+
+    User getUserByName = userRepository.findByUsername(user.getUsername());
+
+    if (getUserByName != null) {
       throw new NotFoundException("Unable to register, username already exists!");
     } else {
       String hashedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
 
-      Long lastUserId = userRepository.findLastUserId();
-
-      if (lastUserId.equals(0L)) {
-        user.setId(1L);
-      } else {
-        Long newUserId = lastUserId + 1L;;
-        user.setId(newUserId);
-      }
-
       user.setPassword(hashedPassword);
-
 
       return userRepository.save(user);
     }
   }
 
-  public User getPersonByUsername(String username) {
-    User byUsername = userRepository.findByUsername(username);
+  public User updateUser(String userName, User user) {
+
+    User getUserByName = userRepository.findByUsername(userName);
+
+    if (getUserByName == null) {
+      throw new NotFoundException("Unable to update! User not found.");
+    } else {
+      getUserByName.setUsername(user.getUsername());
+      String hashedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+      getUserByName.setPassword(hashedPassword);
+      getUserByName.setRole(user.getRole());
+      getUserByName.setSector(user.getSector());
+    }
+    return userRepository.save(getUserByName);
+  }
+
+  public User getPersonByUsername(String userName) {
+    User byUsername = userRepository.findByUsername(userName);
     if (byUsername == null) {
       throw new NotFoundException("User not exist");
     }
@@ -62,8 +71,9 @@ public class UserService implements UserDetailsService {
   userRepository.deleteById(id);
   }
 
+
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return userRepository.findByUsername(username);
+  public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    return userRepository.findByUsername(userName);
   }
 }
