@@ -38,9 +38,9 @@ public class UserService implements UserDetailsService {
     }
   }
 
-  public User updateUser(String userName, User user) {
+  public User updateUser(Long id, User user) {
 
-    User getUserByName = userRepository.findByUsername(userName);
+    User getUserByName = userRepository.findUserById(id);
 
     if (getUserByName == null) {
       throw new NotFoundException("Unable to update! User not found.");

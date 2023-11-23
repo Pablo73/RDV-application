@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -55,13 +56,10 @@ public class UserController {
   }
 
   @GetMapping("/details")
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-  public ResponseEntity<Object> getUser(HttpServletRequest request) {
-    String authorizationHeader = request.getHeader("Authorization");
-    String token = authorizationHeader.substring(7);
+  public ResponseEntity<Object> getUser(Authentication authentication) {
+    User user = (User) authentication.getPrincipal();
 
-    String validateToken = tokenService.validateToken(token);
-    User personByUsername = userService.getPersonByUsername(validateToken);
+    User personByUsername = userService.getPersonByUsername(user.getUsername());
 
     UserDto userDto = DtoConverter.personToDto(personByUsername);
 
@@ -69,17 +67,13 @@ public class UserController {
   }
 
   @PutMapping("/update")
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
   public ResponseEntity<UserDto> updateUserProfile(
-      HttpServletRequest request,
+      Authentication authentication,
       @RequestBody User updatedUserData) {
 
-    String authorizationHeader = request.getHeader("Authorization");
-    String token = authorizationHeader.substring(7);
+    User user = (User) authentication.getPrincipal();
 
-    String userName = tokenService.validateToken(token);
-
-    User updateUser = userService.updateUser(userName, updatedUserData);
+    User updateUser = userService.updateUser(user.getId(), updatedUserData);
 
     DtoConverter dtoConverter = new DtoConverter();
 
