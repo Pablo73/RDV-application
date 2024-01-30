@@ -3,10 +3,12 @@ package com.project.rdv.services;
 import com.project.rdv.models.entity.User;
 import com.project.rdv.models.entity.UserImage;
 import com.project.rdv.models.repository.UserImageRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class UserImageService {
 
   private final UserImageRepository userImageRepository;
@@ -31,8 +33,7 @@ public class UserImageService {
     }
   }
 
-  public byte[] getImage (User user) {
-    UserImage getUserImageByIdUser = userImageRepository.findUserImageByIdUser(user.getId());
-    return getUserImageByIdUser.getImageData();
+  public UserImage getImage (Long id) {
+    return userImageRepository.findById(id).orElse(null);
   }
 }

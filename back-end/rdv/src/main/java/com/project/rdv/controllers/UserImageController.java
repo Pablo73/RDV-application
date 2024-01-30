@@ -37,16 +37,15 @@ public class UserImageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userImage);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getImage(Authentication authentication) {
-
+    @GetMapping("/{id}")
+    public ResponseEntity<byte[]> getImage(Authentication authentication, @PathVariable Long id) {
         User user = (User) authentication.getPrincipal();
+        UserImage imageData = userImageService.getImage(id);
 
-        byte[] imageData = userImageService.getImage(user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf(IMAGE_PNG_VALUE))
-                .body(imageData);
+        return new ResponseEntity<>(imageData.getImageData(), headers, HttpStatus.OK);
     }
 
 }

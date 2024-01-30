@@ -9,8 +9,7 @@ public class UserImage {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Lob
-  @Basic(fetch = FetchType.LAZY)
+  @Basic(fetch = FetchType.EAGER)
   private byte[] imageData;
 
   @OneToOne
